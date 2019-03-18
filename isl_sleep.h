@@ -1,7 +1,7 @@
 /*
 
- isl_sleep - v.0.0.1 - public domain cross-platform sleep function
-                       with millisecond precision 
+ isl_sleep - v.0.0.2 - public domain cross-platform sleep function
+                       with microsecond precision (usleep)
 
  author: Ilya Kolbin (iskolbin@gmail.com)
  url: github.com/iskolbin/isl_sleep
@@ -36,29 +36,30 @@
 #define ISL_SLEEP_API static
 #endif
 
-ISL_SLEEP_API void isl_sleep(unsigned int ms);
+ISL_SLEEP_API void isl_usleep(long int microseconds);
 
 #ifdef ISL_SLEEP_IMPLEMENTATION
 
-void isl_sleep(unsigned int ms) {
+void isl_usleep(long int microseconds) {
 #if defined(_WIN32)
 	HANDLE timer;
 	LARGE_INTEGER ft;
-	due.QuadPart = -(10000 * (__int64)ms);
+	due.QuadPart = -(10 * (__int64)microseconds);
 	timer = CreateWaitableTimer(NULL, TRUE, NULL);
 	SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
 	WaitForSingleObject(timer, INFINITE);
 	CloseHandle(timer);
 #elif defined(__linux__) || defined(__EMSCRIPTEN__)
 	struct timespec req = {
-		.tv_sec = ms/1000;
-		.tv_nsec = (ms%1000)*1000000L;
+		.tv_sec = microseconds/1000000;
+		.tv_nsec = (microseconds%1000000)*1000;
 	};
 	while (nanosleep(&req, &req) == -1) continue;
 #elif defined(__APPLE__)
-	usleep(1000*ms);
+	usleep(microseconds);
 #else
-	clock_t finish_clocks = clock() + (ms * CLOCKS_PER_SEC / 1000);
+	// naive fallback
+	clock_t finish_clocks = clock() + (microseconds * CLOCKS_PER_SEC / 1000000);
 	while (clock() < finish_clocks) continue;
 #endif
 }
