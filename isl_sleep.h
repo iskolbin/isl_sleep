@@ -1,6 +1,6 @@
 /*
 
- isl_sleep - v.0.0.2 - public domain cross-platform sleep function
+ isl_sleep - v.0.0.3 - public domain cross-platform sleep function
                        with microsecond precision (usleep)
 
  author: Ilya Kolbin (iskolbin@gmail.com)
@@ -51,8 +51,8 @@ void isl_usleep(long int microseconds) {
 	CloseHandle(timer);
 #elif defined(__linux__) || defined(__EMSCRIPTEN__)
 	struct timespec req = {
-		.tv_sec = microseconds/1000000;
-		.tv_nsec = (microseconds%1000000)*1000;
+		.tv_sec = microseconds/1000000,
+		.tv_nsec = (microseconds%1000000)*1000
 	};
 	while (nanosleep(&req, &req) == -1) continue;
 #elif defined(__APPLE__)
