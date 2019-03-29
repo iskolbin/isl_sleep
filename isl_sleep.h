@@ -1,6 +1,6 @@
 /*
 
- isl_sleep - v.0.0.3 - public domain cross-platform sleep function
+ isl_sleep - v.0.0.4 - public domain cross-platform sleep function
                        with microsecond precision (usleep)
 
  author: Ilya Kolbin (iskolbin@gmail.com)
@@ -23,9 +23,9 @@
 #if defined(_WIN32)
 #include <windows.h>
 #elif defined(__linux__) || defined(__EMSCRIPTEN__)
-#include <sys/time.h>           // Required for: timespec, nanosleep(), select() - POSIX
+#include <time.h>  // nanosleep()
 #elif defined(__APPLE__)
-#include <unistd.h>             // Required for: usleep()
+#include <unistd.h> // usleep()
 #else
 #include <time.h>
 #endif
